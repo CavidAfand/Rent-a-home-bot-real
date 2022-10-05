@@ -272,8 +272,10 @@ public class TelegramMessagingServiceImpl implements TelegramMessagingService {
             if (searchParameter == null)
                 searchParameter = searchParameterService.getSearchParameter(chatId);
 
+            // finish message
             sendMessage(getSearchParametersFinishMessage(chatId, chat.getLanguage(), searchParameter));
-            return sendMessage(getReadyInfoMessage(chatId, chat.getLanguage()));
+            sendMessage(getReadyInfoMessage(chatId, chat.getLanguage()));
+            return sendMessage(getFraudWarningMessage(chatId, chat.getLanguage()));
         }
 
         return null;
@@ -370,6 +372,14 @@ public class TelegramMessagingServiceImpl implements TelegramMessagingService {
         SendMessageDTO sendMessageDTO = new SendMessageDTO();
         sendMessageDTO.setChatId(chatId);
         sendMessageDTO.setText(messageProvider.getMessage("ready_info", language));
+        sendMessageDTO.setReplyKeyboard(new ReplyKeyboardRemoveDTO(true));
+        return sendMessageDTO;
+    }
+
+    private SendMessageDTO getFraudWarningMessage(Long chatId, Language language) {
+        SendMessageDTO sendMessageDTO = new SendMessageDTO();
+        sendMessageDTO.setChatId(chatId);
+        sendMessageDTO.setText(messageProvider.getMessage("fraud_warning", language));
         sendMessageDTO.setReplyKeyboard(new ReplyKeyboardRemoveDTO(true));
         return sendMessageDTO;
     }
