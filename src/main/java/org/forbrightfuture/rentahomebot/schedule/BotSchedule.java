@@ -107,4 +107,9 @@ public class BotSchedule {
         log.info("Heart beat signals were sent");
     }
 
+    @Scheduled(fixedDelayString = "${task.send-broadcast-message.rate}")
+    public void sendBroadcastMessages() {
+
+    }
+
 }

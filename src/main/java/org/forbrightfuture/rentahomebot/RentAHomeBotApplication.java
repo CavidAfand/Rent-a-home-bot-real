@@ -10,7 +10,6 @@ public class RentAHomeBotApplication {
 
     public static void main(String[] args) {
         SpringApplication.run(RentAHomeBotApplication.class, args);
-        System.out.println("Version: 8 march");
     }
 
 }
