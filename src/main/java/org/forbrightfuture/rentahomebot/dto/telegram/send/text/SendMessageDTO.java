@@ -7,6 +7,14 @@ import org.forbrightfuture.rentahomebot.dto.telegram.send.ReplyKeyboard;
 @Data
 public class SendMessageDTO {
 
+    public SendMessageDTO() {}
+
+    public SendMessageDTO(Long chatId, String text, ReplyKeyboard replyKeyboard) {
+        this.chatId = chatId;
+        this.text = text;
+        this.replyKeyboard = replyKeyboard;
+    }
+
     @JsonProperty("chat_id")
     private Long chatId;
 

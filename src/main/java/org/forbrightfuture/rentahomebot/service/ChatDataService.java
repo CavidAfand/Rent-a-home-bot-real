@@ -8,6 +8,8 @@ import org.forbrightfuture.rentahomebot.entity.Chat;
 import org.forbrightfuture.rentahomebot.entity.Message;
 import org.forbrightfuture.rentahomebot.entity.User;
 
+import java.util.List;
+
 public interface ChatDataService {
 
     void saveTelegramMessage(TelegramUpdateDTO telegramUpdateDTO);
@@ -21,6 +23,8 @@ public interface ChatDataService {
     Message saveMessage(MessageDTO messageDTO, Chat chat, User user);
 
     Chat getChatByChatId(Long chatId);
+
+    public List<Chat> getAllChat();
 
     void deleteOldMessages();
 
