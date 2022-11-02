@@ -26,6 +26,6 @@ public class BroadcastMessage {
     private Date insertTime;
 
     @Column(name = "segment_id", nullable = false)
-    private long segmentId;
+    private int segmentId;
 
 }

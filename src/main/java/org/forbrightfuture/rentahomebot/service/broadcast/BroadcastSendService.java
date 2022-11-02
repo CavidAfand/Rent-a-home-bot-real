@@ -6,6 +6,6 @@ import java.util.List;
 
 public interface BroadcastSendService {
 
-    public void sendCustomBroadcast(String message, List<BroadcastChatDTO> chatList);
+    void sendCustomBroadcast(String message, List<BroadcastChatDTO> chatList);
 
 }

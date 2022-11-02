@@ -7,6 +7,7 @@ import org.forbrightfuture.rentahomebot.dto.telegram.send.text.SendMessageDTO;
 import org.forbrightfuture.rentahomebot.dto.telegram.update.TelegramUpdateDTO;
 import org.forbrightfuture.rentahomebot.entity.Home;
 import org.forbrightfuture.rentahomebot.service.*;
+import org.forbrightfuture.rentahomebot.service.broadcast.BroadcastService;
 import org.springframework.scheduling.annotation.EnableAsync;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
@@ -24,15 +25,17 @@ public class BotSchedule {
     private final TelegramMessagingService telegramMessagingService;
     private final ChatDataService chatDataService;
     private final HeartBeatUserService heartBeatUserService;
+    private final BroadcastService broadcastService;
 
     public BotSchedule(CityService cityService, HomeService homeService,
                        TelegramMessagingService telegramMessagingService, ChatDataService chatDataService,
-                       HeartBeatUserService heartBeatUserService) {
+                       HeartBeatUserService heartBeatUserService, BroadcastService broadcastService) {
         this.cityService = cityService;
         this.homeService = homeService;
         this.telegramMessagingService = telegramMessagingService;
         this.chatDataService = chatDataService;
         this.heartBeatUserService = heartBeatUserService;
+        this.broadcastService = broadcastService;
     }
 
     @Scheduled(fixedRateString = "${task.update-cities.rate}")
@@ -109,7 +112,12 @@ public class BotSchedule {
 
     @Scheduled(fixedDelayString = "${task.send-broadcast-message.rate}")
     public void sendBroadcastMessages() {
-
+        if (broadcastService.sendCustomBroadcastMessage()) {
+            log.info("Broadcast message was sent!");
+        }
+        else {
+            log.error("Broadcast message sent failed");
+        }
     }
 
 }

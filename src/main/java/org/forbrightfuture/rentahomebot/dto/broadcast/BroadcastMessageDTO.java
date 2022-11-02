@@ -23,6 +23,6 @@ public class BroadcastMessageDTO {
     private String broadcastContent;
     private BroadcastState alreadySent;
     private Date insertTime;
-    private long segmentId;
+    private int segmentId;
 
 }
