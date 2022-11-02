@@ -1,6 +1,7 @@
 package org.forbrightfuture.rentahomebot.service.impl.broadcast;
 
 import lombok.extern.slf4j.Slf4j;
+import org.forbrightfuture.rentahomebot.constants.BroadcastState;
 import org.forbrightfuture.rentahomebot.dto.broadcast.BroadcastMessageDTO;
 import org.forbrightfuture.rentahomebot.entity.broadcast.BroadcastChatDTO;
 import org.forbrightfuture.rentahomebot.service.broadcast.BroadcastMessageService;
@@ -35,7 +36,10 @@ public class BroadcastServiceImpl implements BroadcastService {
                 broadcastSegmentService.getChatListBySegmentId(broadcastMessageDTO.getSegmentId());
         if (broadcastChatDTOList.size() > 0) {
             log.info("Broadcast " + broadcastMessageDTO.getBroadcastName() + " is started to send;");
+
             broadcastSendService.sendCustomBroadcast(broadcastMessageDTO.getBroadcastContent(), broadcastChatDTOList);
+            broadcastMessageService.setBroadcastMessageAsSent(broadcastMessageDTO);
+
             log.info("Broadcast " + broadcastMessageDTO.getBroadcastName() + " sent stopped;");
             sendResult = true;
         }

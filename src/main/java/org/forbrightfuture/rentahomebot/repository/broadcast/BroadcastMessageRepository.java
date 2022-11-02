@@ -10,7 +10,9 @@ public interface BroadcastMessageRepository extends JpaRepository<BroadcastMessa
 
     @Query("select bm from BroadcastMessage bm " +
             "where bm.alreadySent = org.forbrightfuture.rentahomebot.constants.BroadcastState.NOT_SENT " +
-            "order by bm.insertTime asc")
-    public List<BroadcastMessage> getBroadcastMessageByFirstNotSent(Pageable pageable);
+            "and  bm.broadcastType = org.forbrightfuture.rentahomebot.constants.BroadcastType.CUSTOM " +
+            "order by bm.broadcastDate asc")
+    List<BroadcastMessage> getCustomBroadcastMessageByNotSentOrderByBroadcastDateAsc(Pageable pageable);
 
+    BroadcastMessage getBroadcastMessageByBroadcastName(String broadcastName);
 }

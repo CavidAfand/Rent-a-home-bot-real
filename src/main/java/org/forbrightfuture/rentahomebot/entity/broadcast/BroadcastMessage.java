@@ -2,6 +2,7 @@ package org.forbrightfuture.rentahomebot.entity.broadcast;
 
 import lombok.Data;
 import org.forbrightfuture.rentahomebot.constants.BroadcastState;
+import org.forbrightfuture.rentahomebot.constants.BroadcastType;
 
 import javax.persistence.*;
 import java.util.Date;
@@ -21,6 +22,13 @@ public class BroadcastMessage {
 
     @Column(name = "already_sent", nullable = false)
     private BroadcastState alreadySent;
+
+    @Column(name = "broadcast_date", nullable = true)
+    private Date broadcastDate;
+
+    @Column(name = "broadcast_type", nullable = false)
+    @Enumerated(EnumType.STRING)
+    private BroadcastType broadcastType;
 
     @Column(name = "insert_time", nullable = false)
     private Date insertTime;

@@ -4,6 +4,8 @@ import org.forbrightfuture.rentahomebot.dto.broadcast.BroadcastMessageDTO;
 
 public interface BroadcastMessageService {
 
-    public BroadcastMessageDTO getNextBroadcastMessage();
+    BroadcastMessageDTO getNextBroadcastMessage();
+
+    void setBroadcastMessageAsSent(BroadcastMessageDTO broadcastMessageDTO);
 
 }
