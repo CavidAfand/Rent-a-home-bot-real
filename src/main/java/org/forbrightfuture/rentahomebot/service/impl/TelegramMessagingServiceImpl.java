@@ -286,6 +286,7 @@ public class TelegramMessagingServiceImpl implements TelegramMessagingService {
     public SendMessageResponseDTO sendHeartBeatMessage(Long chatId) {
         SendMessageDTO sendMessageDTO = new SendMessageDTO();
         sendMessageDTO.setChatId(chatId);
+        sendMessageDTO.setParseMode("HTML");
         sendMessageDTO.setText("Heart beat signal. No worries. Bot is working");
         sendMessageDTO.setReplyKeyboard(new ReplyKeyboardRemoveDTO(false));
         return sendMessage(sendMessageDTO);
@@ -305,6 +306,7 @@ public class TelegramMessagingServiceImpl implements TelegramMessagingService {
 
         SendMessageDTO sendMessageDTO = new SendMessageDTO();
         sendMessageDTO.setChatId(chatId);
+        sendMessageDTO.setParseMode("HTML");
         sendMessageDTO.setText(messageProvider.getMessage("start_message", null));
         sendMessageDTO.setReplyKeyboard(replyKeyboardMarkupDTO);
 
@@ -334,6 +336,7 @@ public class TelegramMessagingServiceImpl implements TelegramMessagingService {
         replyKeyboardMarkupDTO.setOneTimeKeyboard(true);
         SendMessageDTO sendMessageDTO = new SendMessageDTO();
         sendMessageDTO.setChatId(chatId);
+        sendMessageDTO.setParseMode("HTML");
         sendMessageDTO.setText(messageProvider.getMessage("question_city_choice", language));
         sendMessageDTO.setReplyKeyboard(replyKeyboardMarkupDTO);
 
@@ -343,6 +346,7 @@ public class TelegramMessagingServiceImpl implements TelegramMessagingService {
     private SendMessageDTO getPriceQuestionMessage(Long chatId, Language language, boolean isLowPriceQuestion) {
         SendMessageDTO sendMessageDTO = getSkipableQuestion(language);
         sendMessageDTO.setChatId(chatId);
+        sendMessageDTO.setParseMode("HTML");
         if (isLowPriceQuestion == true)
             sendMessageDTO.setText(messageProvider.getMessage("question_min_price", language));
         else
@@ -353,6 +357,7 @@ public class TelegramMessagingServiceImpl implements TelegramMessagingService {
     private SendMessageDTO getRoomNumberQuestionMessage(Long chatId, Language language) {
         SendMessageDTO sendMessageDTO = getSkipableQuestion(language);
         sendMessageDTO.setChatId(chatId);
+        sendMessageDTO.setParseMode("HTML");
         sendMessageDTO.setText(messageProvider.getMessage("question_room_number", language));
         return sendMessageDTO;
     }
@@ -366,6 +371,7 @@ public class TelegramMessagingServiceImpl implements TelegramMessagingService {
 
         SendMessageDTO sendMessageDTO = new SendMessageDTO();
         sendMessageDTO.setReplyKeyboard(replyKeyboard);
+        sendMessageDTO.setParseMode("HTML");
         return sendMessageDTO;
     }
 
@@ -373,6 +379,7 @@ public class TelegramMessagingServiceImpl implements TelegramMessagingService {
         SendMessageDTO sendMessageDTO = new SendMessageDTO();
         sendMessageDTO.setChatId(chatId);
         sendMessageDTO.setText(messageProvider.getMessage("ready_info", language));
+        sendMessageDTO.setParseMode("HTML");
         sendMessageDTO.setReplyKeyboard(new ReplyKeyboardRemoveDTO(true));
         return sendMessageDTO;
     }
@@ -381,6 +388,7 @@ public class TelegramMessagingServiceImpl implements TelegramMessagingService {
         SendMessageDTO sendMessageDTO = new SendMessageDTO();
         sendMessageDTO.setChatId(chatId);
         sendMessageDTO.setText(messageProvider.getMessage("fraud_warning", language));
+        sendMessageDTO.setParseMode("HTML");
         sendMessageDTO.setReplyKeyboard(new ReplyKeyboardRemoveDTO(true));
         return sendMessageDTO;
     }
@@ -389,6 +397,7 @@ public class TelegramMessagingServiceImpl implements TelegramMessagingService {
         SendMessageDTO sendMessageDTO = new SendMessageDTO();
         sendMessageDTO.setChatId(chatId);
         sendMessageDTO.setText(messageProvider.getMessage("invalid_number_info", language));
+        sendMessageDTO.setParseMode("HTML");
         sendMessageDTO.setReplyKeyboard(new ReplyKeyboardRemoveDTO(true));
         return sendMessageDTO;
     }
@@ -397,6 +406,7 @@ public class TelegramMessagingServiceImpl implements TelegramMessagingService {
         SendMessageDTO sendMessageDTO = new SendMessageDTO();
         sendMessageDTO.setText(messageProvider.getMessage("reset_info", language));
         sendMessageDTO.setChatId(chatId);
+        sendMessageDTO.setParseMode("HTML");
         sendMessageDTO.setReplyKeyboard(new ReplyKeyboardRemoveDTO(true));
         return sendMessageDTO;
     }
@@ -404,10 +414,7 @@ public class TelegramMessagingServiceImpl implements TelegramMessagingService {
     private SendMessageDTO getAuthorInfoMessage(Long chatId, Language language) {
         String text = messageProvider.getMessage("author", language) + ": Javid Afandiyev\nhttps://www.linkedin.com/in/javid-afandiyev-63825014b/";
 
-        SendMessageDTO sendMessageDTO = new SendMessageDTO();
-        sendMessageDTO.setChatId(chatId);
-        sendMessageDTO.setText(text);
-        sendMessageDTO.setReplyKeyboard(new ReplyKeyboardRemoveDTO(true));
+        SendMessageDTO sendMessageDTO = new SendMessageDTO(chatId, text, new ReplyKeyboardRemoveDTO(true));
 
         return sendMessageDTO;
     }
@@ -433,10 +440,7 @@ public class TelegramMessagingServiceImpl implements TelegramMessagingService {
                 "- " + messageProvider.getMessage("notification.max_price", language) + ": " + maxPrice + "\n" +
                 "- " + messageProvider.getMessage("notification.number_of_room", language) + ": " + numberOfRoom;
 
-        SendMessageDTO sendMessageDTO = new SendMessageDTO();
-        sendMessageDTO.setChatId(chatId);
-        sendMessageDTO.setText(text);
-        sendMessageDTO.setReplyKeyboard(new ReplyKeyboardRemoveDTO(true));
+        SendMessageDTO sendMessageDTO = new SendMessageDTO(chatId, text, new ReplyKeyboardRemoveDTO(true));
         return sendMessageDTO;
     }
 
