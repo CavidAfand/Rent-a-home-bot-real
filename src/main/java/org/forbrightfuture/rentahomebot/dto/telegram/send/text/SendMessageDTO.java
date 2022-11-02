@@ -13,6 +13,14 @@ public class SendMessageDTO {
         this.chatId = chatId;
         this.text = text;
         this.replyKeyboard = replyKeyboard;
+        this.parseMode = "HTML";
+    }
+
+    public SendMessageDTO(Long chatId, String text, String parseMode, ReplyKeyboard replyKeyboard) {
+        this.chatId = chatId;
+        this.text = text;
+        this.replyKeyboard = replyKeyboard;
+        this.parseMode = parseMode;
     }
 
     @JsonProperty("chat_id")
@@ -20,6 +28,9 @@ public class SendMessageDTO {
 
     @JsonProperty("text")
     private String text;
+
+    @JsonProperty("parse_mode")
+    private String parseMode;
 
     @JsonProperty("reply_markup")
     private ReplyKeyboard replyKeyboard;

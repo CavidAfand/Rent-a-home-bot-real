@@ -3,7 +3,7 @@ package org.forbrightfuture.rentahomebot.service.impl.broadcast;
 import org.forbrightfuture.rentahomebot.constants.ChatStage;
 import org.forbrightfuture.rentahomebot.dto.telegram.send.ReplyKeyboardRemoveDTO;
 import org.forbrightfuture.rentahomebot.dto.telegram.send.text.SendMessageDTO;
-import org.forbrightfuture.rentahomebot.entity.broadcast.BroadcastChatDTO;
+import org.forbrightfuture.rentahomebot.dto.broadcast.BroadcastChatDTO;
 import org.forbrightfuture.rentahomebot.service.TelegramMessagingService;
 import org.forbrightfuture.rentahomebot.service.broadcast.BroadcastSendService;
 import org.springframework.stereotype.Service;

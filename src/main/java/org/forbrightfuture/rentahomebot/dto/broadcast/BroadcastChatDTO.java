@@ -1,4 +1,4 @@
-package org.forbrightfuture.rentahomebot.entity.broadcast;
+package org.forbrightfuture.rentahomebot.dto.broadcast;
 
 import lombok.Data;
 import org.forbrightfuture.rentahomebot.constants.ChatStage;

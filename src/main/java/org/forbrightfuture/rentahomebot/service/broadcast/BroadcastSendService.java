@@ -1,6 +1,6 @@
 package org.forbrightfuture.rentahomebot.service.broadcast;
 
-import org.forbrightfuture.rentahomebot.entity.broadcast.BroadcastChatDTO;
+import org.forbrightfuture.rentahomebot.dto.broadcast.BroadcastChatDTO;
 
 import java.util.List;
 

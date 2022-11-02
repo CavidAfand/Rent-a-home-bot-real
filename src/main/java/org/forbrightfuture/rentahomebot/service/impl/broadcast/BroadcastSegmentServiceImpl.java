@@ -1,7 +1,7 @@
 package org.forbrightfuture.rentahomebot.service.impl.broadcast;
 
 import org.forbrightfuture.rentahomebot.entity.Chat;
-import org.forbrightfuture.rentahomebot.entity.broadcast.BroadcastChatDTO;
+import org.forbrightfuture.rentahomebot.dto.broadcast.BroadcastChatDTO;
 import org.forbrightfuture.rentahomebot.repository.broadcast.BroadcastSegmentRepository;
 import org.forbrightfuture.rentahomebot.service.ChatDataService;
 import org.forbrightfuture.rentahomebot.service.broadcast.BroadcastSegmentService;

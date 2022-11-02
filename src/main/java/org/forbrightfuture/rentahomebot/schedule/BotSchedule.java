@@ -115,9 +115,6 @@ public class BotSchedule {
         if (broadcastService.sendCustomBroadcastMessage()) {
             log.info("Broadcast message was sent!");
         }
-        else {
-            log.error("Broadcast message sent failed");
-        }
     }
 
 }
