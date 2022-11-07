@@ -112,9 +112,12 @@ public class BotSchedule {
 
     @Scheduled(fixedDelayString = "${task.send-broadcast-message.rate}")
     public void sendBroadcastMessages() {
+        long startTime = System.currentTimeMillis();
         if (broadcastService.sendCustomBroadcastMessage()) {
             log.info("Broadcast message was sent!");
         }
+        long endTime = System.currentTimeMillis();
+        log.info("Passed time in broadcast messages: " + (endTime - startTime) + " ms");
     }
 
 }
