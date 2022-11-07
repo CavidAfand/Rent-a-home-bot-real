@@ -8,4 +8,8 @@ public interface BroadcastMessageService {
 
     void setBroadcastMessageAsSent(BroadcastMessageDTO broadcastMessageDTO);
 
+    boolean saveBroadcastMessage(String text, long chatId);
+
+    void saveBroadcastMessage(BroadcastMessageDTO broadcastMessageDTO);
+
 }

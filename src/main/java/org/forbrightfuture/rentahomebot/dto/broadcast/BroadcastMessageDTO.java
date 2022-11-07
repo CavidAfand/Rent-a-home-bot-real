@@ -17,6 +17,7 @@ public class BroadcastMessageDTO {
         this.insertTime = broadcastMessage.getInsertTime();
         this.alreadySent = broadcastMessage.getAlreadySent();
         this.segmentId = broadcastMessage.getSegmentId();
+        this.broadcastDate = broadcastMessage.getBroadcastDate();
     }
 
     private String broadcastName;
@@ -24,5 +25,6 @@ public class BroadcastMessageDTO {
     private BroadcastState alreadySent;
     private Date insertTime;
     private int segmentId;
+    private Date broadcastDate;
 
 }

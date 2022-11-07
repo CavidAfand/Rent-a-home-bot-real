@@ -3,10 +3,7 @@ package org.forbrightfuture.rentahomebot.service.impl.broadcast;
 import lombok.extern.slf4j.Slf4j;
 import org.forbrightfuture.rentahomebot.dto.broadcast.BroadcastMessageDTO;
 import org.forbrightfuture.rentahomebot.dto.broadcast.BroadcastChatDTO;
-import org.forbrightfuture.rentahomebot.service.broadcast.BroadcastMessageService;
-import org.forbrightfuture.rentahomebot.service.broadcast.BroadcastSegmentService;
-import org.forbrightfuture.rentahomebot.service.broadcast.BroadcastSendService;
-import org.forbrightfuture.rentahomebot.service.broadcast.BroadcastService;
+import org.forbrightfuture.rentahomebot.service.broadcast.*;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -21,7 +18,8 @@ public class BroadcastServiceImpl implements BroadcastService {
 
     public BroadcastServiceImpl(BroadcastMessageService broadcastMessageService,
                                 BroadcastSegmentService broadcastSegmentService,
-                                BroadcastSendService broadcastSendService) {
+                                BroadcastSendService broadcastSendService,
+                                BroadcastCreatorService broadcastCreatorService) {
         this.broadcastMessageService = broadcastMessageService;
         this.broadcastSegmentService = broadcastSegmentService;
         this.broadcastSendService = broadcastSendService;
@@ -51,4 +49,5 @@ public class BroadcastServiceImpl implements BroadcastService {
         }
         return sendResult;
     }
+
 }

@@ -15,6 +15,8 @@ import org.forbrightfuture.rentahomebot.entity.City;
 import org.forbrightfuture.rentahomebot.entity.Home;
 import org.forbrightfuture.rentahomebot.entity.SearchParameter;
 import org.forbrightfuture.rentahomebot.service.*;
+import org.forbrightfuture.rentahomebot.service.broadcast.BroadcastMessageService;
+import org.forbrightfuture.rentahomebot.service.broadcast.BroadcastService;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
@@ -40,18 +42,21 @@ public class TelegramMessagingServiceImpl implements TelegramMessagingService {
     private final CityService cityService;
     private final SearchParameterService searchParameterService;
     private final HomeService homeService;
+    private final BroadcastMessageService broadcastMessageService;
 
     private Long offset = null;
 
     public TelegramMessagingServiceImpl(HttpRequestService httpRequestService, ChatDataService chatDataService,
                                         MessageProvider messageProvider, CityService cityService,
-                                        SearchParameterService searchParameterService, HomeService homeService) {
+                                        SearchParameterService searchParameterService, HomeService homeService,
+                                        BroadcastMessageService broadcastMessageService) {
         this.httpRequestService = httpRequestService;
         this.chatDataService = chatDataService;
         this.messageProvider = messageProvider;
         this.cityService = cityService;
         this.searchParameterService = searchParameterService;
         this.homeService = homeService;
+        this.broadcastMessageService = broadcastMessageService;
     }
 
     @Override
@@ -157,7 +162,7 @@ public class TelegramMessagingServiceImpl implements TelegramMessagingService {
         Chat chat = chatDataService.getChatByChatId(chatId);
 
         if (chat.getChatStage() == ChatStage.START || chat.getChatStage() == ChatStage.BOT_BLOCKED
-                || text.equals("/reset") || text.equals("/about")) {
+                || text.equals("/reset") || text.equals("/about") || text.startsWith("/broadcast")) {
 
             if (text.equals("/reset")) {
                 chat.setChatStage(ChatStage.START);
@@ -167,6 +172,10 @@ public class TelegramMessagingServiceImpl implements TelegramMessagingService {
             }
             else if (text.equals("/about")) {
                 return sendMessage(getAuthorInfoMessage(chatId, chat.getLanguage()));
+            }
+            else if (text.startsWith("/broadcast")) {
+                if (broadcastMessageService.saveBroadcastMessage(text, chatId))
+                    return sendMessage(getBroadcastSavedMessage(chatId));
             }
 
             if (!(text.equals("azərbaycanca") || text.equals("русский") || text.equals("english"))) {
@@ -290,6 +299,10 @@ public class TelegramMessagingServiceImpl implements TelegramMessagingService {
         sendMessageDTO.setText("Heart beat signal. No worries. Bot is working");
         sendMessageDTO.setReplyKeyboard(new ReplyKeyboardRemoveDTO(false));
         return sendMessage(sendMessageDTO);
+    }
+
+    private SendMessageDTO getBroadcastSavedMessage(long chatId) {
+        return new SendMessageDTO(chatId, "Broadcast message was saved", new ReplyKeyboardRemoveDTO(true));
     }
 
     private SendMessageDTO getLanguageChoiceMessage(Long chatId) {
