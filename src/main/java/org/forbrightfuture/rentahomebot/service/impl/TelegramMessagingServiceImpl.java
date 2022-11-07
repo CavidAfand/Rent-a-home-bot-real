@@ -445,7 +445,7 @@ public class TelegramMessagingServiceImpl implements TelegramMessagingService {
             numberOfRoom = searchParameter.getMinNumberOfRoom().toString() + "-" + searchParameter.getMaxNumberOfRoom();
         }
         else {
-            messageProvider.getMessage("notification.no_entered", language);
+            numberOfRoom = messageProvider.getMessage("notification.no_entered", language);
         }
         String text = messageProvider.getMessage("entered_search_params", language) + ": \n" +
                     "- " + messageProvider.getMessage("notification.city", language) + ": " + city + "\n" +
