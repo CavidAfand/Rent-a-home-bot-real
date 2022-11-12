@@ -40,7 +40,7 @@ public class HttpRequestServiceImpl implements HttpRequestService {
                 .block();
 
         if (httpStatus.get().value() != 200)
-            log.info(String.format("[Response from %s, status code: %d] %s", url, httpStatus.get().value(), responseBody));
+            log.error(String.format("[Response from %s, status code: %d] %s", url, httpStatus.get().value(), responseBody));
 
         return convertFromString(responseBody, className);
     }
@@ -61,7 +61,7 @@ public class HttpRequestServiceImpl implements HttpRequestService {
                 .block();
 
         if (httpStatus.get().value() != 200)
-            log.info(String.format("[Response from %s, status code: %d] %s", url, httpStatus.get().value(), responseBody));
+            log.error(String.format("[Response from %s, status code: %d] %s", url, httpStatus.get().value(), responseBody));
 
         return convertFromString(responseBody, className);
     }

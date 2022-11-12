@@ -85,6 +85,7 @@ public class TelegramMessagingServiceImpl implements TelegramMessagingService {
 
     @Override
     public SendMessageResponseDTO sendMessage(SendMessageDTO sendMessageDTO) {
+        waitForSendingMessage();
         String url = telegramApiBaseUrl + "/bot" + botToken + "/sendMessage";
         SendMessageResponseDTO responseDTO = httpRequestService.sendPostRequest(url, sendMessageDTO, SendMessageResponseDTO.class);
         return responseDTO;
@@ -92,6 +93,7 @@ public class TelegramMessagingServiceImpl implements TelegramMessagingService {
 
     @Override
     public SendMessageResponseDTO sendPhoto(SendPhotoDTO sendPhotoDTO) {
+        waitForSendingMessage();
         String url = telegramApiBaseUrl + "/bot" + botToken + "/sendPhoto";
         SendMessageResponseDTO responseDTO = httpRequestService.sendPostRequest(url, sendPhotoDTO, SendMessageResponseDTO.class);
         return responseDTO;
@@ -99,12 +101,11 @@ public class TelegramMessagingServiceImpl implements TelegramMessagingService {
 
     @Override
     public void sendNewNotifications(List<Home> homeList) {
-        long count = 0;
         for (Home home: homeList) {
             List<Chat> chatList = searchParameterService.getChatListByAppropriateParameters(home);
             for (Chat chat: chatList) {
                 try {
-                    System.out.println(new ObjectMapper().writeValueAsString(getNewHomeNotification(home, chat.getChatId(), chat.getLanguage())));
+                    log.info(new ObjectMapper().writeValueAsString(getNewHomeNotification(home, chat.getChatId(), chat.getLanguage())));
                 } catch (JsonProcessingException e) {
                     e.printStackTrace();
                 }
@@ -117,21 +118,14 @@ public class TelegramMessagingServiceImpl implements TelegramMessagingService {
                             chat.setType("supergroup");
                             chatDataService.updateChat(chat);
                             sendPhoto(getNewHomeNotification(home, chat.getChatId(), chat.getLanguage()));
-                        }
-                        else {
+                        } else {
                             chat.setChatStage(ChatStage.START);
                             chatDataService.updateChat(chat);
                         }
-                    }
-                    else if (sendMessageResponseDTO.getOk() == false && sendMessageResponseDTO.getDescription().equals("Forbidden: bot was blocked by the user")) {
+                    } else if (sendMessageResponseDTO.getOk() == false && sendMessageResponseDTO.getDescription().equals("Forbidden: bot was blocked by the user")) {
                         chat.setChatStage(ChatStage.BOT_BLOCKED);
                         chatDataService.updateChat(chat);
                     }
-                }
-                try {
-                    Thread.sleep(100L);
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
                 }
             }
             home.setAlreadySent(true);
@@ -476,6 +470,15 @@ public class TelegramMessagingServiceImpl implements TelegramMessagingService {
         sendPhotoDTO.setCaption(notificationText);
 
         return sendPhotoDTO;
+    }
+
+    // This method was used becuase Telegram is able to handle 30 messages per second
+    private void waitForSendingMessage() {
+        try {
+            Thread.sleep(90L);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
     }
 
 }
