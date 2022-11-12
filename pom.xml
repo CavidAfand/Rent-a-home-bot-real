@@ -10,7 +10,7 @@
     </parent>
     <groupId>org.forbrightfuture</groupId>
     <artifactId>rent-a-home-bot</artifactId>
-    <version>1.2.2</version>
+    <version>1.2.3</version>
     <name>rent-a-home-bot</name>
     <description>rent-a-home-bot</description>
     <properties>
