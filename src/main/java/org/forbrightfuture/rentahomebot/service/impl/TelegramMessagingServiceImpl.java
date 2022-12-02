@@ -125,6 +125,7 @@ public class TelegramMessagingServiceImpl implements TelegramMessagingService {
                     } else if (sendMessageResponseDTO.getOk() == false && sendMessageResponseDTO.getDescription().equals("Forbidden: bot was blocked by the user")) {
                         chat.setChatStage(ChatStage.BOT_BLOCKED);
                         chatDataService.updateChat(chat);
+                        searchParameterService.deleteSearchParameter(chat.getChatId());
                     }
                 }
             }
