@@ -97,7 +97,7 @@ public class BotSchedule {
                 (TimeVariables.clearOldHomesEndTime - TimeVariables.clearOldHomesStartTime) + " ms");
     }
 
-    @Scheduled(fixedRateString = "${task.clear-old-messages.rate}")
+//    @Scheduled(fixedRateString = "${task.clear-old-messages.rate}")
     public void clearOldMessagesFromDatabase() {
         log.info("Clearing old messages began");
         TimeVariables.clearOldMessagesStartTime = System.currentTimeMillis();
