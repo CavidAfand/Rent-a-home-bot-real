@@ -126,6 +126,10 @@ public class TelegramMessagingServiceImpl implements TelegramMessagingService {
                         chat.setChatStage(ChatStage.BOT_BLOCKED);
                         chatDataService.updateChat(chat);
                         searchParameterService.deleteSearchParameter(chat.getChatId());
+                    } else if (sendMessageResponseDTO.getOk() == false && sendMessageResponseDTO.getDescription().equals("Forbidden: user is deactivated")) {
+                        chat.setChatStage(ChatStage.USER_DEACTIVED);
+                        chatDataService.updateChat(chat);
+                        searchParameterService.deleteSearchParameter(chat.getChatId());
                     }
                 }
             }

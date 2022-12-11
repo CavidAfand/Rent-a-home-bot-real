@@ -8,7 +8,8 @@ public enum ChatStage {
     CITY,
     ROOM_NUMBER,
     READY_RECEIVED,
-    BOT_BLOCKED
+    BOT_BLOCKED,
+    USER_DEACTIVED
 
 
 }
