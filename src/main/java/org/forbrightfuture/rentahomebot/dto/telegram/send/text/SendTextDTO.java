@@ -3,34 +3,28 @@ package org.forbrightfuture.rentahomebot.dto.telegram.send.text;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Data;
 import org.forbrightfuture.rentahomebot.dto.telegram.send.ReplyKeyboard;
+import org.forbrightfuture.rentahomebot.dto.telegram.send.TelegramSendMessage;
 
 @Data
-public class SendMessageDTO {
+public class SendTextDTO extends TelegramSendMessage {
 
-    public SendMessageDTO() {}
+    public SendTextDTO() {}
 
-    public SendMessageDTO(Long chatId, String text, ReplyKeyboard replyKeyboard) {
-        this.chatId = chatId;
+    public SendTextDTO(Long chatId, String text, ReplyKeyboard replyKeyboard) {
+        super(chatId, "HTML");
         this.text = text;
         this.replyKeyboard = replyKeyboard;
-        this.parseMode = "HTML";
     }
 
-    public SendMessageDTO(Long chatId, String text, String parseMode, ReplyKeyboard replyKeyboard) {
-        this.chatId = chatId;
+    public SendTextDTO(Long chatId, String text, String parseMode, ReplyKeyboard replyKeyboard) {
+        super(chatId, parseMode);
         this.text = text;
         this.replyKeyboard = replyKeyboard;
-        this.parseMode = parseMode;
     }
-
-    @JsonProperty("chat_id")
-    private Long chatId;
 
     @JsonProperty("text")
     private String text;
 
-    @JsonProperty("parse_mode")
-    private String parseMode;
 
     @JsonProperty("reply_markup")
     private ReplyKeyboard replyKeyboard;

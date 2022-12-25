@@ -18,7 +18,7 @@ public class BroadcastSegment {
     @Column(name = "segment_id", nullable = false)
     private int segmentId;
 
-    @OneToMany
+    @ManyToMany
     @Column(name = "chat_id")
     private List<Chat> chat;
 

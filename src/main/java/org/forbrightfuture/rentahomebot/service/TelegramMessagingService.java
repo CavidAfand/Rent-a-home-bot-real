@@ -1,7 +1,8 @@
 package org.forbrightfuture.rentahomebot.service;
 
+import org.forbrightfuture.rentahomebot.dto.telegram.send.TelegramSendMessage;
 import org.forbrightfuture.rentahomebot.dto.telegram.send.photo.SendPhotoDTO;
-import org.forbrightfuture.rentahomebot.dto.telegram.send.text.SendMessageDTO;
+import org.forbrightfuture.rentahomebot.dto.telegram.send.text.SendTextDTO;
 import org.forbrightfuture.rentahomebot.dto.telegram.send.SendMessageResponseDTO;
 import org.forbrightfuture.rentahomebot.dto.telegram.update.TelegramUpdateDTO;
 import org.forbrightfuture.rentahomebot.entity.Home;
@@ -12,14 +13,12 @@ public interface TelegramMessagingService {
 
     TelegramUpdateDTO getUpdates();
 
-    SendMessageResponseDTO sendMessage(SendMessageDTO sendMessageDTO);
-
-    SendMessageResponseDTO sendPhoto(SendPhotoDTO sendPhotoDTO);
-
     SendMessageResponseDTO reply(TelegramUpdateDTO telegramUpdateDTO);
 
     SendMessageResponseDTO sendHeartBeatMessage(Long chatId);
 
     void sendNewNotifications(List<Home> homeList);
+
+    boolean sendMessage(TelegramSendMessage message);
 
 }

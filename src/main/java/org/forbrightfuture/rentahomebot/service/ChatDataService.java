@@ -1,5 +1,6 @@
 package org.forbrightfuture.rentahomebot.service;
 
+import org.forbrightfuture.rentahomebot.constants.ChatStage;
 import org.forbrightfuture.rentahomebot.dto.telegram.update.ChatDTO;
 import org.forbrightfuture.rentahomebot.dto.telegram.update.MessageDTO;
 import org.forbrightfuture.rentahomebot.dto.telegram.update.TelegramUpdateDTO;
@@ -24,8 +25,12 @@ public interface ChatDataService {
 
     Chat getChatByChatId(Long chatId);
 
-    public List<Chat> getAllChat();
+    List<Chat> getAllChat();
 
     void deleteOldMessages();
+
+    Chat migrateChatId(long oldChatId, long migratedChatId);
+
+    void updateChatStage(long chatId, ChatStage chatStage);
 
 }

@@ -14,6 +14,7 @@ import org.forbrightfuture.rentahomebot.repository.UserRepository;
 import org.forbrightfuture.rentahomebot.service.ChatDataService;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Date;
 import java.util.List;
@@ -111,6 +112,21 @@ public class ChatDataServiceImpl implements ChatDataService {
     public void deleteOldMessages() {
         Date date = new Date(System.currentTimeMillis() - daysInMs);
         messageRepository.deleteOldMessages(date);
+    }
+
+    @Override
+    public Chat migrateChatId(long oldChatId, long migratedChatId) {
+        Chat chat = chatRepository.getChatByChatId(oldChatId);
+        chat.setChatId(migratedChatId);
+        chat.setType("supergroup");
+        chatRepository.save(chat);
+        return chat;
+    }
+
+    @Override
+    @Transactional
+    public void updateChatStage(long chatId, ChatStage chatStage) {
+        chatRepository.updateChatStage(chatId, chatStage);
     }
 
 }
