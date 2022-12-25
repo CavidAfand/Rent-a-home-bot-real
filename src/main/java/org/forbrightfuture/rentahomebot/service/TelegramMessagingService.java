@@ -13,7 +13,7 @@ public interface TelegramMessagingService {
 
     TelegramUpdateDTO getUpdates();
 
-    SendMessageResponseDTO reply(TelegramUpdateDTO telegramUpdateDTO);
+    Boolean reply(TelegramUpdateDTO telegramUpdateDTO);
 
     SendMessageResponseDTO sendHeartBeatMessage(Long chatId);
 
