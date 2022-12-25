@@ -135,7 +135,7 @@ public class TelegramMessagingServiceImpl implements TelegramMessagingService {
     }
 
     @Override
-    public SendMessageResponseDTO reply(TelegramUpdateDTO telegramUpdateDTO) {
+    public Boolean reply(TelegramUpdateDTO telegramUpdateDTO) {
 
         // check it is private or group chat
         if (telegramUpdateDTO.getMessageDTO().getChat().getType().equals("group")) {
@@ -162,25 +162,25 @@ public class TelegramMessagingServiceImpl implements TelegramMessagingService {
             if (text.equals("/reset")) {
                 chatDataService.updateChatStage(chatId, ChatStage.START);
                 searchParameterService.deleteSearchParameter(chatId);
-                sendText(getResetInfoMessage(chatId, chat.getLanguage()));
+                sendMessage(getResetInfoMessage(chatId, chat.getLanguage()));
             }
             else if (text.equals("/about")) {
-                return sendText(getAuthorInfoMessage(chatId, chat.getLanguage()));
+                return sendMessage(getAuthorInfoMessage(chatId, chat.getLanguage()));
             }
             else if (text.startsWith("/broadcast")) {
                 if (broadcastMessageService.saveBroadcastMessage(text, chatId))
-                    return sendText(getBroadcastSavedMessage(chatId));
+                    return sendMessage(getBroadcastSavedMessage(chatId));
             }
 
             if (!(text.equals("azərbaycanca") || text.equals("русский") || text.equals("english"))) {
-                return sendText(getLanguageChoiceMessage(chatId));
+                return sendMessage(getLanguageChoiceMessage(chatId));
             }
             else {
                 if (text.equals("azərbaycanca")) chat.setLanguage(Language.az);
                 else if (text.equals("english")) chat.setLanguage(Language.en);
                 else chat.setLanguage(Language.ru);
                 chatDataService.updateChatStage(chatId, ChatStage.CITY);
-                return sendText(getCityChoiceMessage(chatId, chat.getLanguage()));
+                return sendMessage(getCityChoiceMessage(chatId, chat.getLanguage()));
             }
         }
         // city select
@@ -192,10 +192,10 @@ public class TelegramMessagingServiceImpl implements TelegramMessagingService {
                 searchParameter.setCity(city);
                 searchParameterService.saveSearchParameter(searchParameter);
                 chatDataService.updateChatStage(chatId, ChatStage.PRICE_LOW);
-                return sendText(getPriceQuestionMessage(chatId, chat.getLanguage(), true));
+                return sendMessage(getPriceQuestionMessage(chatId, chat.getLanguage(), true));
             }
             else {
-                return sendText(getCityChoiceMessage(chatId, chat.getLanguage()));
+                return sendMessage(getCityChoiceMessage(chatId, chat.getLanguage()));
             }
         }
         // price
@@ -209,8 +209,8 @@ public class TelegramMessagingServiceImpl implements TelegramMessagingService {
                     enteredPrice = Long.parseLong(text);
                 } catch (NumberFormatException ex) {
                     log.error("Incorrect price. Entered value: " + enteredPrice);
-                    sendText(getInvalidNumberErrorMessage(chatId, chat.getLanguage()));
-                    return sendText(getPriceQuestionMessage(chatId, chat.getLanguage(), chat.getChatStage() == ChatStage.PRICE_LOW));
+                    sendMessage(getInvalidNumberErrorMessage(chatId, chat.getLanguage()));
+                    return sendMessage(getPriceQuestionMessage(chatId, chat.getLanguage(), chat.getChatStage() == ChatStage.PRICE_LOW));
                 }
                 SearchParameter searchParameter = searchParameterService.getSearchParameter(chatId);
                 if (chat.getChatStage() == ChatStage.PRICE_LOW) {
@@ -225,11 +225,11 @@ public class TelegramMessagingServiceImpl implements TelegramMessagingService {
 
             if (chat.getChatStage() == ChatStage.PRICE_LOW) {
                 chatDataService.updateChatStage(chatId, ChatStage.PRICE_HIGH);
-                return sendText(getPriceQuestionMessage(chatId, chat.getLanguage(), false));
+                return sendMessage(getPriceQuestionMessage(chatId, chat.getLanguage(), false));
             }
             else {
                 chatDataService.updateChatStage(chatId, ChatStage.ROOM_NUMBER);
-                return sendText(getRoomNumberQuestionMessage(chatId, chat.getLanguage()));
+                return sendMessage(getRoomNumberQuestionMessage(chatId, chat.getLanguage()));
             }
         }
         // room number
@@ -254,8 +254,8 @@ public class TelegramMessagingServiceImpl implements TelegramMessagingService {
                 }
                 catch (NumberFormatException | ArrayIndexOutOfBoundsException ex) {
                     log.error("Incorrect value. Entered value: " + text);
-                    sendText(getInvalidNumberErrorMessage(chatId, chat.getLanguage()));
-                    return sendText(getRoomNumberQuestionMessage(chatId, chat.getLanguage()));
+                    sendMessage(getInvalidNumberErrorMessage(chatId, chat.getLanguage()));
+                    return sendMessage(getRoomNumberQuestionMessage(chatId, chat.getLanguage()));
                 }
 
 
@@ -272,9 +272,9 @@ public class TelegramMessagingServiceImpl implements TelegramMessagingService {
                 searchParameter = searchParameterService.getSearchParameter(chatId);
 
             // finish message
-            sendText(getSearchParametersFinishMessage(chatId, chat.getLanguage(), searchParameter));
-            sendText(getReadyInfoMessage(chatId, chat.getLanguage()));
-            return sendText(getFraudWarningMessage(chatId, chat.getLanguage()));
+            sendMessage(getSearchParametersFinishMessage(chatId, chat.getLanguage(), searchParameter));
+            sendMessage(getReadyInfoMessage(chatId, chat.getLanguage()));
+            return sendMessage(getFraudWarningMessage(chatId, chat.getLanguage()));
         }
 
         return null;
