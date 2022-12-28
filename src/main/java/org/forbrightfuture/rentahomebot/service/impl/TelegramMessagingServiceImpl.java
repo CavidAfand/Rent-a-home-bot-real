@@ -179,7 +179,9 @@ public class TelegramMessagingServiceImpl implements TelegramMessagingService {
                 if (text.equals("azərbaycanca")) chat.setLanguage(Language.az);
                 else if (text.equals("english")) chat.setLanguage(Language.en);
                 else chat.setLanguage(Language.ru);
-                chatDataService.updateChatStage(chatId, ChatStage.CITY);
+                chat.setChatStage(ChatStage.CITY);
+                chatDataService.updateChat(chat);
+//                chatDataService.updateChatStage(chatId, ChatStage.CITY);
                 return sendMessage(getCityChoiceMessage(chatId, chat.getLanguage()));
             }
         }
