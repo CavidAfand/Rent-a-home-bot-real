@@ -38,7 +38,7 @@ public class BotSchedule {
         this.broadcastService = broadcastService;
     }
 
-    @Scheduled(fixedRateString = "${task.update-cities.rate}")
+//    @Scheduled(fixedRateString = "${task.update-cities.rate}")
     public void updateCities() throws IOException {
         log.info("City table update began");
         TimeVariables.cityUpdateStartTime = System.currentTimeMillis();
@@ -49,7 +49,7 @@ public class BotSchedule {
                 (TimeVariables.cityUpdateEndTime - TimeVariables.cityUpdateStartTime) + " ms");
     }
 
-    @Scheduled(fixedDelayString = "${task.binaaz-update-homes.rate}", initialDelay = 10000L)
+//    @Scheduled(fixedDelayString = "${task.binaaz-update-homes.rate}", initialDelay = 10000L)
     public void updateBinaazHomes() throws IOException {
         log.info("Binaaz - homes update began");
         TimeVariables.binaazHomesUpdateStartTime = System.currentTimeMillis();
