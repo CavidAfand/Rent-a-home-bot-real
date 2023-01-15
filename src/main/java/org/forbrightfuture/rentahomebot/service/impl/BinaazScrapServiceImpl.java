@@ -87,6 +87,13 @@ public class BinaazScrapServiceImpl implements ScrapService {
                         homes.add(homeDTO);
                     }
                 }
+
+                // Delay between getting homes because of
+                try {
+                    Thread.sleep(5000);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
             }
         }
         return homes;
