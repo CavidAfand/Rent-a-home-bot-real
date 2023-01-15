@@ -85,14 +85,14 @@ public class BinaazScrapServiceImpl implements ScrapService {
                         homeDTO.setCity(announcementCardParams.selectFirst("div.city_when").text().split(",")[0]);
                         homeDTO = getHomeDetails(homeDTO);
                         homes.add(homeDTO);
-                    }
-                }
 
-                // Delay between getting homes because of
-                try {
-                    Thread.sleep(5000);
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
+                        // Delay between getting homes because of
+                        try {
+                            Thread.sleep(5000);
+                        } catch (InterruptedException e) {
+                            e.printStackTrace();
+                        }
+                    }
                 }
             }
         }
