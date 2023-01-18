@@ -1,19 +1,20 @@
 package org.forbrightfuture.rentahomebot.schedule;
 
-import lombok.extern.slf4j.Slf4j;
+import java.io.IOException;
+import java.util.List;
 import org.forbrightfuture.rentahomebot.constants.Website;
 import org.forbrightfuture.rentahomebot.dto.HeartBeatUserDTO;
 import org.forbrightfuture.rentahomebot.dto.telegram.update.TelegramUpdateDTO;
 import org.forbrightfuture.rentahomebot.entity.Home;
 import org.forbrightfuture.rentahomebot.service.*;
 import org.forbrightfuture.rentahomebot.service.broadcast.BroadcastService;
+import org.forbrightfuture.rentahomebot.staticVar.BlackHourScrapingAllower;
 import org.forbrightfuture.rentahomebot.staticVar.TimeVariables;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.scheduling.annotation.EnableAsync;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
-import java.io.IOException;
-import java.util.List;
 
 @Service
 @EnableAsync
@@ -26,16 +27,19 @@ public class BotSchedule {
     private final ChatDataService chatDataService;
     private final HeartBeatUserService heartBeatUserService;
     private final BroadcastService broadcastService;
+    private final BlackHourService blackHourService;
 
     public BotSchedule(CityService cityService, HomeService homeService,
                        TelegramMessagingService telegramMessagingService, ChatDataService chatDataService,
-                       HeartBeatUserService heartBeatUserService, BroadcastService broadcastService) {
+                       HeartBeatUserService heartBeatUserService, BroadcastService broadcastService,
+                       BlackHourService blackHourService) {
         this.cityService = cityService;
         this.homeService = homeService;
         this.telegramMessagingService = telegramMessagingService;
         this.chatDataService = chatDataService;
         this.heartBeatUserService = heartBeatUserService;
         this.broadcastService = broadcastService;
+        this.blackHourService = blackHourService;
     }
 
     @Scheduled(fixedRateString = "${task.update-cities.rate}")
@@ -51,6 +55,12 @@ public class BotSchedule {
 
     @Scheduled(fixedDelayString = "${task.binaaz-update-homes.rate}", initialDelay = 10000L)
     public void updateBinaazHomes() throws IOException {
+        if (blackHourService.isBlackHour("UpdateBinaaz schedule")) {
+            if (BlackHourScrapingAllower.allowCounter % 10 == 0)
+                log.info("Binaaz scraping started in black hours");
+            else
+                return;
+        }
         log.info("Binaaz - homes update began");
         TimeVariables.binaazHomesUpdateStartTime = System.currentTimeMillis();
         homeService.findNewHomes(Website.BinaAz);
@@ -62,6 +72,12 @@ public class BotSchedule {
 
     @Scheduled(fixedDelayString = "${task.yeniemlak-update-homes.rate}", initialDelay = 20000L)
     public void updateYeniEmlakHomes() throws IOException {
+        if (blackHourService.isBlackHour("UpdateYeniemlak schedule")) {
+            if (BlackHourScrapingAllower.allowCounter % 10 == 0)
+                log.info("Yeniemlak scraping started in black hours");
+            else
+                return;
+        }
         log.info("Yeniemlak - homes update began");
         TimeVariables.yeniemlakHomesUpdateStartTime = System.currentTimeMillis();
         homeService.findNewHomes(Website.YeniEmlak);
@@ -82,6 +98,14 @@ public class BotSchedule {
 
     @Scheduled(fixedDelayString = "${task.send-new-notification.rate}")
     public void sendNotificationsToUsers() {
+        if (blackHourService.isBlackHour("SendNotificationToUsers schedule")) {
+            BlackHourScrapingAllower.allowCounter++;
+            return;
+        }
+        else {
+            BlackHourScrapingAllower.allowCounter = 0;
+        }
+
         List<Home> homeList = homeService.getUnsentHomes();
         telegramMessagingService.sendNewNotifications(homeList);
     }
