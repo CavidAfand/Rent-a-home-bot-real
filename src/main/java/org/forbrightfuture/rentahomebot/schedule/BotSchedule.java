@@ -11,13 +11,11 @@ import org.forbrightfuture.rentahomebot.service.broadcast.BroadcastService;
 import org.forbrightfuture.rentahomebot.staticVar.BlackHourScrapingAllower;
 import org.forbrightfuture.rentahomebot.staticVar.TimeVariables;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.scheduling.annotation.EnableAsync;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
 
 @Service
-@EnableAsync
 @Slf4j
 public class BotSchedule {
 
