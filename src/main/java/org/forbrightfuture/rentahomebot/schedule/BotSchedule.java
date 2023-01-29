@@ -8,7 +8,6 @@ import org.forbrightfuture.rentahomebot.dto.telegram.update.TelegramUpdateDTO;
 import org.forbrightfuture.rentahomebot.entity.Home;
 import org.forbrightfuture.rentahomebot.service.*;
 import org.forbrightfuture.rentahomebot.service.broadcast.BroadcastService;
-import org.forbrightfuture.rentahomebot.staticVar.BlackHourScrapingAllower;
 import org.forbrightfuture.rentahomebot.staticVar.TimeVariables;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.scheduling.annotation.Scheduled;
@@ -53,11 +52,8 @@ public class BotSchedule {
 
     @Scheduled(fixedDelayString = "${task.binaaz-update-homes.rate}", initialDelay = 10000L)
     public void updateBinaazHomes() throws IOException {
-        if (blackHourService.isBlackHour("UpdateBinaaz schedule")) {
-            if (BlackHourScrapingAllower.allowCounter % 10 == 0)
-                log.info("Binaaz scraping started in black hours");
-            else
-                return;
+        if (blackHourService.isBlackHourAndNotAllowedForScrapping(Website.BinaAz)) {
+            return;
         }
         log.info("Binaaz - homes update began");
         TimeVariables.binaazHomesUpdateStartTime = System.currentTimeMillis();
@@ -70,11 +66,8 @@ public class BotSchedule {
 
     @Scheduled(fixedDelayString = "${task.yeniemlak-update-homes.rate}", initialDelay = 20000L)
     public void updateYeniEmlakHomes() throws IOException {
-        if (blackHourService.isBlackHour("UpdateYeniemlak schedule")) {
-            if (BlackHourScrapingAllower.allowCounter % 10 == 0)
-                log.info("Yeniemlak scraping started in black hours");
-            else
-                return;
+        if (blackHourService.isBlackHourAndNotAllowedForScrapping(Website.YeniEmlak)) {
+            return;
         }
         log.info("Yeniemlak - homes update began");
         TimeVariables.yeniemlakHomesUpdateStartTime = System.currentTimeMillis();
@@ -97,11 +90,7 @@ public class BotSchedule {
     @Scheduled(fixedDelayString = "${task.send-new-notification.rate}")
     public void sendNotificationsToUsers() {
         if (blackHourService.isBlackHour("SendNotificationToUsers schedule")) {
-            BlackHourScrapingAllower.allowCounter++;
             return;
-        }
-        else {
-            BlackHourScrapingAllower.allowCounter = 0;
         }
 
         List<Home> homeList = homeService.getUnsentHomes();
