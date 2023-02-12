@@ -40,7 +40,7 @@ public class HttpRequestServiceImpl implements HttpRequestService {
                 .block();
 
         if (httpStatus.get().value() != 200)
-            log.error(String.format("[Response from %s, status code: %d] %s", url, httpStatus.get().value(), responseBody));
+            logError(url, httpStatus.get().value(), responseBody);
 
         return convertFromString(responseBody, className);
     }
@@ -61,7 +61,7 @@ public class HttpRequestServiceImpl implements HttpRequestService {
                 .block();
 
         if (httpStatus.get().value() != 200)
-            log.error(String.format("[Response from %s, status code: %d] %s", url, httpStatus.get().value(), responseBody));
+            logError(url, httpStatus.get().value(), responseBody);
 
         return convertFromString(responseBody, className);
     }
@@ -73,5 +73,12 @@ public class HttpRequestServiceImpl implements HttpRequestService {
             log.error("", ex);
             return null;
         }
+    }
+
+    private void logError(String url, int statusCode, String responseBody) {
+        if (url.startsWith("https://api.telegram.org")) {
+            url = url.substring(0, 25) + "...." + url.substring(url.length() - 10);
+        }
+        log.error(String.format("[Response from %s, status code: %d] %s", url, statusCode, responseBody));
     }
 }
