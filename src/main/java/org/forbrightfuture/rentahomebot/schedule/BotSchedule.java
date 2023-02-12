@@ -11,10 +11,10 @@ import org.forbrightfuture.rentahomebot.service.broadcast.BroadcastService;
 import org.forbrightfuture.rentahomebot.staticVar.TimeVariables;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.scheduling.annotation.Scheduled;
-import org.springframework.stereotype.Service;
+import org.springframework.stereotype.Component;
 
 
-@Service
+@Component
 @Slf4j
 public class BotSchedule {
 
