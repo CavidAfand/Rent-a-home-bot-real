@@ -101,11 +101,10 @@ public class BinaazScrapServiceImpl implements ScrapService {
 
     private HomeDTO getHomeDetails(HomeDTO homeDTO) throws IOException {
         Document homeDetailsPageDocument = Jsoup.connect(homeDTO.getPageLink()).get();
-        Elements details = homeDetailsPageDocument.select("table.parameters > tbody > tr");
+        Elements details = homeDetailsPageDocument.select("div.product-properties__column div");
         for (Element detail: details) {
-            Elements detailParams = detail.select("td");
-            String paramTitle = detailParams.get(0).text();
-            String paramValue = detailParams.get(1).text();
+            String paramTitle = detail.select("label.product-properties__i-name").text();
+            String paramValue = detail.select("span.product-properties__i-value").text();
             switch (paramTitle) {
                 case "Kateqoriya":
                     homeDTO.setCategory(paramValue);
@@ -122,13 +121,13 @@ public class BinaazScrapServiceImpl implements ScrapService {
             }
         }
 
-        Elements badges = homeDetailsPageDocument.select("div.badges_blokc ul.locations li");
+        Elements extras = homeDetailsPageDocument.select("ul.product-extras li");
         List<String> tags = new ArrayList<>();
-        for (Element badge: badges) {
-            tags.add(badge.selectFirst("a").text());
+        for (Element extra: extras) {
+            tags.add(extra.selectFirst("a").text());
         }
         homeDTO.setTags(tags.stream().collect(Collectors.joining(",")));
-        homeDTO.setInfo(homeDetailsPageDocument.select("article").text());
+        homeDTO.setInfo(homeDetailsPageDocument.select("div.product-description__content p").text());
         return homeDTO;
     }
 
