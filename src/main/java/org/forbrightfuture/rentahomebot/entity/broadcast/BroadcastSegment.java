@@ -1,10 +1,11 @@
 package org.forbrightfuture.rentahomebot.entity.broadcast;
 
+
 import lombok.Data;
 import org.forbrightfuture.rentahomebot.entity.Chat;
-
-import javax.persistence.*;
+import jakarta.persistence.*;
 import java.util.List;
+
 
 @Data
 @Table(name = "broadcast_segment")

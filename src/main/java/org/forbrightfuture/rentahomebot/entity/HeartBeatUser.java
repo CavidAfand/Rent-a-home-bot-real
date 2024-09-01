@@ -1,8 +1,8 @@
 package org.forbrightfuture.rentahomebot.entity;
 
 import lombok.Data;
+import jakarta.persistence.*;
 
-import javax.persistence.*;
 
 @Entity
 @Table(name = "HEART_BEAT_USER")

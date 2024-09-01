@@ -2,8 +2,7 @@ package org.forbrightfuture.rentahomebot.entity;
 
 import lombok.Data;
 
-import javax.persistence.*;
-import java.math.BigDecimal;
+import jakarta.persistence.*;
 import java.util.Date;
 
 @Entity
@@ -46,8 +45,7 @@ public class Home {
     @Column(name="TAGS")
     private String tags;
 
-    @Lob
-    @Column(name="INFO")
+    @Column(name="INFO", columnDefinition = "TEXT")
     private String info;
 
     @Column(name="ALREADY_SENT")

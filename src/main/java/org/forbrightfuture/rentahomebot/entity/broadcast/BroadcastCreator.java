@@ -1,10 +1,8 @@
 package org.forbrightfuture.rentahomebot.entity.broadcast;
 
 import lombok.Data;
+import jakarta.persistence.*;
 
-import javax.persistence.Entity;
-import javax.persistence.Id;
-import javax.persistence.Table;
 
 @Entity
 @Table(name="broadcast_creator")

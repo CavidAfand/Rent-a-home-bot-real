@@ -1,7 +1,7 @@
 package org.forbrightfuture.rentahomebot.entity;
 
 import lombok.Data;
-import javax.persistence.*;
+import jakarta.persistence.*;
 
 @Entity
 @Table(name = "city")

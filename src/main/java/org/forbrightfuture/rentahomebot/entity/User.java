@@ -1,12 +1,10 @@
 package org.forbrightfuture.rentahomebot.entity;
 
-import lombok.Data;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.Id;
-import javax.persistence.Table;
+import lombok.Data;
+import jakarta.persistence.*;
 import java.util.Date;
+
 
 @Entity
 @Table(name="USER")

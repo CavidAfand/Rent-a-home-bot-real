@@ -1,10 +1,10 @@
 package org.forbrightfuture.rentahomebot.entity;
 
+import jakarta.persistence.*;
 import lombok.Data;
 import org.forbrightfuture.rentahomebot.constants.ChatStage;
 import org.forbrightfuture.rentahomebot.constants.Language;
 
-import javax.persistence.*;
 
 @Entity
 @Table(name = "CHAT")

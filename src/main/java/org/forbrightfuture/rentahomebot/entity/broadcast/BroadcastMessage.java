@@ -3,9 +3,9 @@ package org.forbrightfuture.rentahomebot.entity.broadcast;
 import lombok.Data;
 import org.forbrightfuture.rentahomebot.constants.BroadcastState;
 import org.forbrightfuture.rentahomebot.constants.BroadcastType;
-
-import javax.persistence.*;
+import jakarta.persistence.*;
 import java.util.Date;
+
 
 @Data
 @Table(name = "broadcast_table")

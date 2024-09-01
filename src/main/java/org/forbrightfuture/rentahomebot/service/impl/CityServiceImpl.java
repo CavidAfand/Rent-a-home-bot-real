@@ -1,5 +1,6 @@
 package org.forbrightfuture.rentahomebot.service.impl;
 
+import jakarta.transaction.Transactional;
 import org.forbrightfuture.rentahomebot.entity.City;
 import org.forbrightfuture.rentahomebot.repository.CityRepository;
 import org.forbrightfuture.rentahomebot.service.CityService;
@@ -7,8 +8,6 @@ import org.forbrightfuture.rentahomebot.service.ScrapService;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 
-import javax.annotation.PostConstruct;
-import javax.transaction.Transactional;
 import java.io.IOException;
 import java.util.List;
 
@@ -22,6 +21,7 @@ public class CityServiceImpl implements CityService {
         this.cityRepository = cityRepository;
         this.scrapService = scrapService;
     }
+
 
     @Transactional
     @Override

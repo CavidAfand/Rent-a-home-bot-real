@@ -5,13 +5,13 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.extern.slf4j.Slf4j;
 import org.forbrightfuture.rentahomebot.service.HttpRequestService;
 import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpStatus;
+import org.springframework.http.HttpStatusCode;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.client.WebClient;
 import reactor.core.publisher.Mono;
-
 import java.util.concurrent.atomic.AtomicReference;
+
 
 @Slf4j
 @Service
@@ -27,7 +27,7 @@ public class HttpRequestServiceImpl implements HttpRequestService {
 
     @Override
     public <T> T sendGetRequest(String url, Class<T> className) {
-        AtomicReference<HttpStatus> httpStatus = new AtomicReference<>();
+        AtomicReference<HttpStatusCode> httpStatus = new AtomicReference<>();
 
         String responseBody = webClient
                 .get()
@@ -47,7 +47,7 @@ public class HttpRequestServiceImpl implements HttpRequestService {
 
     @Override
     public <T, V> T sendPostRequest(String url, V v, Class<T> className) {
-        AtomicReference<HttpStatus> httpStatus = new AtomicReference<>();
+        AtomicReference<HttpStatusCode> httpStatus = new AtomicReference<>();
 
         String responseBody = webClient
                 .post()

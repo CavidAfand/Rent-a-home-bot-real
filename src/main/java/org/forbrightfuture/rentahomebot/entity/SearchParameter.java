@@ -1,8 +1,9 @@
 package org.forbrightfuture.rentahomebot.entity;
 
-import lombok.Data;
 
-import javax.persistence.*;
+import lombok.Data;
+import jakarta.persistence.*;
+
 
 @Entity
 @Table(name = "SEARCH_PARAMETER")
