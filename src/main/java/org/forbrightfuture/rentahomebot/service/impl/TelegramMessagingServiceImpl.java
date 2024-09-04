@@ -164,7 +164,7 @@ public class TelegramMessagingServiceImpl implements TelegramMessagingService {
                 searchParameterService.deleteSearchParameter(chatId);
                 sendMessage(getResetInfoMessage(chatId, chat.getLanguage()));
             }
-            else if (text.equals("/about")) {
+            else if (text.equals("/author")) {
                 return sendMessage(getAuthorInfoMessage(chatId, chat.getLanguage()));
             }
             else if (text.startsWith("/broadcast")) {
@@ -276,7 +276,8 @@ public class TelegramMessagingServiceImpl implements TelegramMessagingService {
             // finish message
             sendMessage(getSearchParametersFinishMessage(chatId, chat.getLanguage(), searchParameter));
             sendMessage(getReadyInfoMessage(chatId, chat.getLanguage()));
-            return sendMessage(getFraudWarningMessage(chatId, chat.getLanguage()));
+            sendMessage(getFraudWarningMessage(chatId, chat.getLanguage()));
+            return sendMessage(getNotificationWaitMessage(chatId, chat.getLanguage()));
         }
 
         return null;
@@ -406,6 +407,15 @@ public class TelegramMessagingServiceImpl implements TelegramMessagingService {
         SendTextDTO sendTextDTO = new SendTextDTO();
         sendTextDTO.setChatId(chatId);
         sendTextDTO.setText(messageProvider.getMessage("fraud_warning", language));
+        sendTextDTO.setParseMode("HTML");
+        sendTextDTO.setReplyKeyboard(new ReplyKeyboardRemoveDTO(true));
+        return sendTextDTO;
+    }
+
+    private SendTextDTO getNotificationWaitMessage(Long chatId, Language language) {
+        SendTextDTO sendTextDTO = new SendTextDTO();
+        sendTextDTO.setChatId(chatId);
+        sendTextDTO.setText(messageProvider.getMessage("notification_wait", language));
         sendTextDTO.setParseMode("HTML");
         sendTextDTO.setReplyKeyboard(new ReplyKeyboardRemoveDTO(true));
         return sendTextDTO;
