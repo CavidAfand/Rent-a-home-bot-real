@@ -157,7 +157,7 @@ public class TelegramMessagingServiceImpl implements TelegramMessagingService {
         Chat chat = chatDataService.getChatByChatId(chatId);
 
         if (chat.getChatStage() == ChatStage.START || chat.getChatStage() == ChatStage.BOT_BLOCKED
-                || text.equals("/reset") || text.equals("/about") || text.startsWith("/broadcast")) {
+                || text.equals("/reset") || text.equals("/author") || text.startsWith("/broadcast")) {
 
             if (text.equals("/reset")) {
                 chatDataService.updateChatStage(chatId, ChatStage.START);
