@@ -2,6 +2,7 @@ package org.forbrightfuture.rentahomebot.service;
 
 import org.forbrightfuture.rentahomebot.constants.Website;
 import org.forbrightfuture.rentahomebot.entity.Home;
+import org.forbrightfuture.rentahomebot.entity.SearchParameter;
 
 import java.io.IOException;
 import java.util.List;
@@ -15,5 +16,7 @@ public interface HomeService {
     Home updateHome(Home home);
 
     void clearOldHomes();
+
+    List<Home> getHomesByCriteria(SearchParameter searchParameter, int count);
 
 }

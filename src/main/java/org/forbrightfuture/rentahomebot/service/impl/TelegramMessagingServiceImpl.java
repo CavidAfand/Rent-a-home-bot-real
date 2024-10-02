@@ -5,6 +5,8 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.extern.slf4j.Slf4j;
 import org.forbrightfuture.rentahomebot.constants.ChatStage;
 import org.forbrightfuture.rentahomebot.constants.Language;
+import org.forbrightfuture.rentahomebot.service.util.TimeFormatterService;
+import org.forbrightfuture.rentahomebot.staticVar.MessageNames;
 import org.forbrightfuture.rentahomebot.dto.telegram.send.*;
 import org.forbrightfuture.rentahomebot.dto.telegram.send.photo.SendPhotoDTO;
 import org.forbrightfuture.rentahomebot.dto.telegram.send.text.SendTextDTO;
@@ -19,6 +21,7 @@ import org.forbrightfuture.rentahomebot.service.broadcast.BroadcastMessageServic
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
+import java.text.SimpleDateFormat;
 import java.util.List;
 
 @Slf4j
@@ -34,6 +37,9 @@ public class TelegramMessagingServiceImpl implements TelegramMessagingService {
     @Value("${telegram.bot.name}")
     private String botName;
 
+    @Value("${coldstart-nofication-count}")
+    private int coldStartNotificationCount;
+
     private final HttpRequestService httpRequestService;
     private final ChatDataService chatDataService;
     private final MessageProvider messageProvider;
@@ -41,13 +47,14 @@ public class TelegramMessagingServiceImpl implements TelegramMessagingService {
     private final SearchParameterService searchParameterService;
     private final HomeService homeService;
     private final BroadcastMessageService broadcastMessageService;
+    private final TimeFormatterService timeFormatterService;
 
     private Long offset = null;
 
     public TelegramMessagingServiceImpl(HttpRequestService httpRequestService, ChatDataService chatDataService,
                                         MessageProvider messageProvider, CityService cityService,
                                         SearchParameterService searchParameterService, HomeService homeService,
-                                        BroadcastMessageService broadcastMessageService) {
+                                        BroadcastMessageService broadcastMessageService, TimeFormatterService timeFormatterService) {
         this.httpRequestService = httpRequestService;
         this.chatDataService = chatDataService;
         this.messageProvider = messageProvider;
@@ -55,6 +62,7 @@ public class TelegramMessagingServiceImpl implements TelegramMessagingService {
         this.searchParameterService = searchParameterService;
         this.homeService = homeService;
         this.broadcastMessageService = broadcastMessageService;
+        this.timeFormatterService = timeFormatterService;
     }
 
     @Override
@@ -63,7 +71,7 @@ public class TelegramMessagingServiceImpl implements TelegramMessagingService {
         if (offset != null)
             url = url + "?offset=" + offset;
         TelegramResponseDTO telegramResponseDTO = httpRequestService.sendGetRequest(url, TelegramResponseDTO.class);
-        if (telegramResponseDTO.getResult().size() > 0) {
+        if (!telegramResponseDTO.getResult().isEmpty()) {
             if (telegramResponseDTO.getResult().get(0).getMessageDTO() != null) {
                 TelegramUpdateDTO telegramUpdateDTO = telegramResponseDTO.getResult().get(0);
                 log.info(telegramUpdateDTO.toString());
@@ -87,11 +95,11 @@ public class TelegramMessagingServiceImpl implements TelegramMessagingService {
             List<Chat> chatList = searchParameterService.getChatListByAppropriateParameters(home);
             for (Chat chat: chatList) {
                 try {
-                    log.info(new ObjectMapper().writeValueAsString(getNewHomeNotification(home, chat.getChatId(), chat.getLanguage())));
+                    log.info(new ObjectMapper().writeValueAsString(getNewHomeNotification(home, chat.getChatId(), chat.getLanguage(), false)));
                 } catch (JsonProcessingException e) {
                     e.printStackTrace();
                 }
-                sendMessage(getNewHomeNotification(home, chat.getChatId(), chat.getLanguage()));
+                sendMessage(getNewHomeNotification(home, chat.getChatId(), chat.getLanguage(), false));
             }
             home.setAlreadySent(true);
             homeService.updateHome(home);
@@ -277,7 +285,7 @@ public class TelegramMessagingServiceImpl implements TelegramMessagingService {
             sendMessage(getSearchParametersFinishMessage(chatId, chat.getLanguage(), searchParameter));
             sendMessage(getReadyInfoMessage(chatId, chat.getLanguage()));
             sendMessage(getFraudWarningMessage(chatId, chat.getLanguage()));
-            return sendMessage(getNotificationWaitMessage(chatId, chat.getLanguage()));
+            return sendMessage(sendColdStart(chatId, chat.getLanguage()));
         }
 
         return null;
@@ -309,6 +317,20 @@ public class TelegramMessagingServiceImpl implements TelegramMessagingService {
 
     private SendTextDTO getBroadcastSavedMessage(long chatId) {
         return new SendTextDTO(chatId, "Broadcast message was saved", new ReplyKeyboardRemoveDTO(true));
+    }
+
+    private SendTextDTO sendColdStart(long chatId, Language language) {
+        SearchParameter searchParameter = searchParameterService.getSearchParameter(chatId);
+        List<Home> homes = homeService.getHomesByCriteria(searchParameter, coldStartNotificationCount);
+
+        if (homes.isEmpty()) {
+            return getTextMessage(chatId, MessageNames.NotificationWait, language);
+        }
+
+        for (Home home: homes) {
+            sendMessage(getNewHomeNotification(home, chatId, language, true));
+        }
+        return getTextMessage(chatId, MessageNames.coldStartMessage, language);
     }
 
     private SendTextDTO getLanguageChoiceMessage(Long chatId) {
@@ -394,6 +416,15 @@ public class TelegramMessagingServiceImpl implements TelegramMessagingService {
         return sendTextDTO;
     }
 
+    private SendTextDTO getTextMessage(Long chatId, String messageName, Language language) {
+        SendTextDTO sendTextDTO = new SendTextDTO();
+        sendTextDTO.setChatId(chatId);
+        sendTextDTO.setText(messageProvider.getMessage(messageName, language));
+        sendTextDTO.setParseMode("HTML");
+        sendTextDTO.setReplyKeyboard(new ReplyKeyboardRemoveDTO(true));
+        return sendTextDTO;
+    }
+
     private SendTextDTO getReadyInfoMessage(Long chatId, Language language) {
         SendTextDTO sendTextDTO = new SendTextDTO();
         sendTextDTO.setChatId(chatId);
@@ -407,15 +438,6 @@ public class TelegramMessagingServiceImpl implements TelegramMessagingService {
         SendTextDTO sendTextDTO = new SendTextDTO();
         sendTextDTO.setChatId(chatId);
         sendTextDTO.setText(messageProvider.getMessage("fraud_warning", language));
-        sendTextDTO.setParseMode("HTML");
-        sendTextDTO.setReplyKeyboard(new ReplyKeyboardRemoveDTO(true));
-        return sendTextDTO;
-    }
-
-    private SendTextDTO getNotificationWaitMessage(Long chatId, Language language) {
-        SendTextDTO sendTextDTO = new SendTextDTO();
-        sendTextDTO.setChatId(chatId);
-        sendTextDTO.setText(messageProvider.getMessage("notification_wait", language));
         sendTextDTO.setParseMode("HTML");
         sendTextDTO.setReplyKeyboard(new ReplyKeyboardRemoveDTO(true));
         return sendTextDTO;
@@ -468,11 +490,10 @@ public class TelegramMessagingServiceImpl implements TelegramMessagingService {
                 "- " + messageProvider.getMessage("notification.max_price", language) + ": " + maxPrice + "\n" +
                 "- " + messageProvider.getMessage("notification.number_of_room", language) + ": " + numberOfRoom;
 
-        SendTextDTO sendTextDTO = new SendTextDTO(chatId, text, new ReplyKeyboardRemoveDTO(true));
-        return sendTextDTO;
+        return new SendTextDTO(chatId, text, new ReplyKeyboardRemoveDTO(true));
     }
 
-    private SendPhotoDTO getNewHomeNotification(Home home, Long chatId, Language language) {
+    private SendPhotoDTO getNewHomeNotification(Home home, Long chatId, Language language, boolean isTimeNeeded) {
         String info = (home.getInfo().length() <= 300)? home.getInfo(): home.getInfo().substring(0, 300) + "....";
         String stage = home.getStage() != null?home.getStage():"-";
         String notificationText = "<b>" + messageProvider.getMessage("notification.address", language) + ":</b> " + home.getCity().getDescription() + " - " + home.getPlace() + "\n" +
@@ -483,6 +504,11 @@ public class TelegramMessagingServiceImpl implements TelegramMessagingService {
                 "<b>" + messageProvider.getMessage("notification.area", language) + ":</b> " + home.getArea() + "\n" +
                 "<b>" + messageProvider.getMessage("notification.info", language) + ":</b> " + info + "\n\n" +
                 "<b>" + messageProvider.getMessage("notification.link.title", language) + ":</b> " + "<a href=\"" + home.getLink() + "\">" + messageProvider.getMessage("notification.link.text", language) + "</a>";
+
+        if (isTimeNeeded) {
+            notificationText += "\n\n" +
+                    "<b>" + messageProvider.getMessage(MessageNames.homeInsertTime, language) + ":</b> " + (timeFormatterService.getDateStringInBakuTimeZone(home.getInsertDate()));
+        }
 
         SendPhotoDTO sendPhotoDTO = new SendPhotoDTO();
         sendPhotoDTO.setChatId(chatId);

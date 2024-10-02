@@ -5,6 +5,7 @@ import org.forbrightfuture.rentahomebot.constants.Website;
 import org.forbrightfuture.rentahomebot.dto.HomeDTO;
 import org.forbrightfuture.rentahomebot.entity.City;
 import org.forbrightfuture.rentahomebot.entity.Home;
+import org.forbrightfuture.rentahomebot.entity.SearchParameter;
 import org.forbrightfuture.rentahomebot.repository.HomeRepository;
 import org.forbrightfuture.rentahomebot.service.CityService;
 import org.forbrightfuture.rentahomebot.service.DTOToModelConvService;
@@ -16,6 +17,7 @@ import org.springframework.stereotype.Service;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.Date;
 import java.util.List;
 
@@ -78,6 +80,18 @@ public class HomeServiceImpl implements HomeService {
         Date date = new Date(System.currentTimeMillis() - daysInMs);
         log.info("Date for old homes: " + date);
         homeRepository.deleteOldHomes(date);
+    }
+
+    @Override
+    public List<Home> getHomesByCriteria(SearchParameter searchParameter, int count) {
+        List<Home> homes = homeRepository.getHomesByCriteria(searchParameter.getCity(), searchParameter.getMinPrice(),
+                searchParameter.getMaxPrice(), searchParameter.getMinNumberOfRoom(),
+                searchParameter.getMaxNumberOfRoom(), searchParameter.getNumberOfRoom());
+
+        return homes.stream()
+                .sorted(Comparator.comparing(Home::getInsertDate).reversed())
+                .limit(count)
+                .toList();
     }
 
 }
