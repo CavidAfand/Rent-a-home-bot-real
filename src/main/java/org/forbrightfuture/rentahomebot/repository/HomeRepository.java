@@ -28,8 +28,8 @@ public interface HomeRepository extends JpaRepository<Home, Long> {
 
     @Query("select h from Home h where h.alreadySent = true and " +
             " h.city = :city and " +
-            "(:minAmount is null or :minAmount < h.price) and " +
-            "(:maxAmount is null or :maxAmount > h.price) and " +
+            "(:minAmount is null or :minAmount <= h.price) and " +
+            "(:maxAmount is null or :maxAmount >= h.price) and " +
             "(:minRoomNumber is null or :minRoomNumber <= h.numberOfRoom) and " +
             "(:maxRoomNumber is null or :maxRoomNumber >= h.numberOfRoom) and" +
             "(:roomNumber is null or :roomNumber = h.numberOfRoom)")
