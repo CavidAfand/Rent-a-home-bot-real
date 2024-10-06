@@ -49,6 +49,8 @@ public class TelegramMessagingServiceImpl implements TelegramMessagingService {
     private final TimeFormatterService timeFormatterService;
 
     private Long offset = null;
+    private String sendTextUrl;
+    private String sendPhotoUrl;
 
     public TelegramMessagingServiceImpl(HttpRequestService httpRequestService, ChatDataService chatDataService,
                                         MessageProvider messageProvider, CityService cityService,
@@ -169,14 +171,14 @@ public class TelegramMessagingServiceImpl implements TelegramMessagingService {
             if (text.equals("/reset")) {
                 chatDataService.updateChatStage(chatId, ChatStage.START);
                 searchParameterService.deleteSearchParameter(chatId);
-                sendMessage(getRawTextMessage(chatId, MessageNames.ResetInfo, chat.getLanguage(), new ReplyKeyboardRemoveDTO(true)));
+                sendMessage(getTextMessage(chatId, MessageNames.ResetInfo, chat.getLanguage(), new ReplyKeyboardRemoveDTO(true)));
             }
             else if (text.equals("/author")) {
                 return sendMessage(getAuthorInfoMessage(chatId, chat.getLanguage()));
             }
             else if (text.startsWith("/broadcast")) {
                 if (broadcastMessageService.saveBroadcastMessage(text, chatId))
-                    return sendMessage(getRawTextMessage(chatId, MessageNames.BroadcastSaved, chat.getLanguage(), new ReplyKeyboardRemoveDTO(true)));
+                    return sendMessage(getTextMessage(chatId, MessageNames.BroadcastSaved, chat.getLanguage(), new ReplyKeyboardRemoveDTO(true)));
             }
 
             if (!(text.equals("azərbaycanca") || text.equals("русский") || text.equals("english"))) {
@@ -217,7 +219,7 @@ public class TelegramMessagingServiceImpl implements TelegramMessagingService {
                     enteredPrice = Long.parseLong(text);
                 } catch (NumberFormatException ex) {
                     log.error("Incorrect price. Entered value: " + enteredPrice);
-                    sendMessage(getRawTextMessage(chatId, MessageNames.InvalidNumberInfo, chat.getLanguage(), new ReplyKeyboardRemoveDTO(true)));
+                    sendMessage(getTextMessage(chatId, MessageNames.InvalidNumberInfo, chat.getLanguage(), new ReplyKeyboardRemoveDTO(true)));
                     return sendMessage(getPriceQuestionMessage(chatId, chat.getLanguage(), chat.getChatStage() == ChatStage.PRICE_LOW));
                 }
                 SearchParameter searchParameter = searchParameterService.getSearchParameter(chatId);
@@ -262,7 +264,7 @@ public class TelegramMessagingServiceImpl implements TelegramMessagingService {
                 }
                 catch (NumberFormatException | ArrayIndexOutOfBoundsException ex) {
                     log.error("Incorrect value. Entered value: " + text);
-                    sendMessage(getRawTextMessage(chatId, MessageNames.InvalidNumberInfo, chat.getLanguage(), new ReplyKeyboardRemoveDTO(true)));
+                    sendMessage(getTextMessage(chatId, MessageNames.InvalidNumberInfo, chat.getLanguage(), new ReplyKeyboardRemoveDTO(true)));
                     return sendMessage(getRoomNumberQuestionMessage(chatId, chat.getLanguage()));
                 }
 
@@ -281,8 +283,8 @@ public class TelegramMessagingServiceImpl implements TelegramMessagingService {
 
             // finish message
             sendMessage(getSearchParametersFinishMessage(chatId, chat.getLanguage(), searchParameter));
-            sendMessage(getRawTextMessage(chatId, MessageNames.ReadyInfo, chat.getLanguage(), new ReplyKeyboardRemoveDTO(true)));
-            sendMessage(getRawTextMessage(chatId, MessageNames.FraudWarning, chat.getLanguage(), new ReplyKeyboardRemoveDTO(true)));
+            sendMessage(getTextMessage(chatId, MessageNames.ReadyInfo, chat.getLanguage(), new ReplyKeyboardRemoveDTO(true)));
+            sendMessage(getTextMessage(chatId, MessageNames.FraudWarning, chat.getLanguage(), new ReplyKeyboardRemoveDTO(true)));
             return sendMessage(sendColdStart(chatId, chat.getLanguage()));
         }
 
@@ -291,20 +293,24 @@ public class TelegramMessagingServiceImpl implements TelegramMessagingService {
 
     @Override
     public SendMessageResponseDTO sendHeartBeatMessage(Long chatId) {
-        return sendText(getRawTextMessage(chatId, MessageNames.HeartBeatSignal, null, (new ReplyKeyboardRemoveDTO(false))));
+        return sendText(getTextMessage(chatId, MessageNames.HeartBeatSignal, null, (new ReplyKeyboardRemoveDTO(false))));
     }
 
     private SendMessageResponseDTO sendText(SendTextDTO sendTextDTO) {
+        if (this.sendTextUrl == null)
+            this.sendTextUrl = telegramApiBaseUrl + "/bot" + botToken + "/sendMessage";
+
         waitForSendingMessage();
-        String url = telegramApiBaseUrl + "/bot" + botToken + "/sendMessage";
-        SendMessageResponseDTO responseDTO = httpRequestService.sendPostRequest(url, sendTextDTO, SendMessageResponseDTO.class);
+        SendMessageResponseDTO responseDTO = httpRequestService.sendPostRequest(this.sendTextUrl, sendTextDTO, SendMessageResponseDTO.class);
         return responseDTO;
     }
 
     private SendMessageResponseDTO sendPhoto(SendPhotoDTO sendPhotoDTO) {
+        if (this.sendPhotoUrl == null)
+            this.sendPhotoUrl = telegramApiBaseUrl + "/bot" + botToken + "/sendPhoto";
+
         waitForSendingMessage();
-        String url = telegramApiBaseUrl + "/bot" + botToken + "/sendPhoto";
-        SendMessageResponseDTO responseDTO = httpRequestService.sendPostRequest(url, sendPhotoDTO, SendMessageResponseDTO.class);
+        SendMessageResponseDTO responseDTO = httpRequestService.sendPostRequest(this.sendPhotoUrl, sendPhotoDTO, SendMessageResponseDTO.class);
         return responseDTO;
     }
 
@@ -313,14 +319,14 @@ public class TelegramMessagingServiceImpl implements TelegramMessagingService {
         List<Home> homes = homeService.getHomesByCriteria(searchParameter, coldStartNotificationCount);
 
         if (homes.isEmpty()) {
-            return getRawTextMessage(chatId, MessageNames.NotificationWait, language, new ReplyKeyboardRemoveDTO(true));
+            return getTextMessage(chatId, MessageNames.NotificationWait, language, new ReplyKeyboardRemoveDTO(true));
         }
 
         for (Home home: homes) {
             sendMessage(getNewHomeNotification(home, chatId, language, true));
         }
 
-        return getRawTextMessage(chatId, MessageNames.coldStartMessage, language, new ReplyKeyboardRemoveDTO(true));
+        return getTextMessage(chatId, MessageNames.coldStartMessage, language, new ReplyKeyboardRemoveDTO(true));
     }
 
     private SendTextDTO getLanguageChoiceMessage(Long chatId) {
@@ -335,7 +341,7 @@ public class TelegramMessagingServiceImpl implements TelegramMessagingService {
         replyKeyboardMarkupDTO.setKeyboardButtonArray(buttons);
         replyKeyboardMarkupDTO.setOneTimeKeyboard(true);
 
-        return getRawTextMessage(chatId, MessageNames.StartMessage, null, replyKeyboardMarkupDTO);
+        return getTextMessage(chatId, MessageNames.StartMessage, null, replyKeyboardMarkupDTO);
     }
 
     private SendTextDTO getCityChoiceMessage(Long chatId, Language language) {
@@ -360,20 +366,20 @@ public class TelegramMessagingServiceImpl implements TelegramMessagingService {
         replyKeyboardMarkupDTO.setKeyboardButtonArray(buttons);
         replyKeyboardMarkupDTO.setOneTimeKeyboard(true);
 
-        return getRawTextMessage(chatId, MessageNames.QuestionCityChoice, language, replyKeyboardMarkupDTO);
+        return getTextMessage(chatId, MessageNames.QuestionCityChoice, language, replyKeyboardMarkupDTO);
     }
 
     private SendTextDTO getPriceQuestionMessage(Long chatId, Language language, boolean isLowPriceQuestion) {
         ReplyKeyboard skipButtonKeyboard = getSkipButtonKeyboard(language);
         if (isLowPriceQuestion)
-            return getRawTextMessage(chatId, MessageNames.QuestionMinPrice, language, skipButtonKeyboard);
+            return getTextMessage(chatId, MessageNames.QuestionMinPrice, language, skipButtonKeyboard);
         else
-            return getRawTextMessage(chatId, MessageNames.QuestionMaxPrice, language, skipButtonKeyboard);
+            return getTextMessage(chatId, MessageNames.QuestionMaxPrice, language, skipButtonKeyboard);
     }
 
     private SendTextDTO getRoomNumberQuestionMessage(Long chatId, Language language) {
         ReplyKeyboard skipButtonKeyboard = getSkipButtonKeyboard(language);
-        return getRawTextMessage(chatId, MessageNames.QuestionRoomNumber, language, skipButtonKeyboard);
+        return getTextMessage(chatId, MessageNames.QuestionRoomNumber, language, skipButtonKeyboard);
     }
 
     private ReplyKeyboard getSkipButtonKeyboard(Language language) {
@@ -385,22 +391,18 @@ public class TelegramMessagingServiceImpl implements TelegramMessagingService {
         return replyKeyboard;
     }
 
-    private SendTextDTO getRawTextMessage(Long chatId, String messageName, Language language, ReplyKeyboard replyKeyboard) {
-        // TODO change replyKeyboard
+    private SendTextDTO getTextMessage(Long chatId, String messageName, Language language, ReplyKeyboard replyKeyboard) {
         SendTextDTO sendTextDTO = new SendTextDTO();
         sendTextDTO.setChatId(chatId);
         sendTextDTO.setText(messageProvider.getMessage(messageName, language));
         sendTextDTO.setParseMode("HTML");
-        sendTextDTO.setReplyKeyboard(new ReplyKeyboardRemoveDTO(true));
+        sendTextDTO.setReplyKeyboard(replyKeyboard);
         return sendTextDTO;
     }
 
     private SendTextDTO getAuthorInfoMessage(Long chatId, Language language) {
         String text = messageProvider.getMessage(MessageNames.Author, language) + ": Javid Afandiyev\nhttps://www.linkedin.com/in/javid-afandiyev-63825014b/";
-
-        SendTextDTO sendTextDTO = new SendTextDTO(chatId, text, new ReplyKeyboardRemoveDTO(true));
-
-        return sendTextDTO;
+        return new SendTextDTO(chatId, text, new ReplyKeyboardRemoveDTO(true));
     }
 
     private SendTextDTO getSearchParametersFinishMessage(Long chatId, Language language, SearchParameter searchParameter) {
