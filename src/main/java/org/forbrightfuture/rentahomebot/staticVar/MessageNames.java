@@ -14,6 +14,9 @@ public class MessageNames {
     public static String ResetInfo = "reset_info";
     public static String Author = "author";
 
+    public static String BroadcastSaved = "broadcast.saved";
+    public static String HeartBeatSignal = "heartbeatsignal";
+
     public static String StartMessage = "start_message";
 
     public static String ParameterNoEntered = "notification.no_entered";
